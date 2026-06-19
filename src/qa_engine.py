@@ -20,11 +20,11 @@ def get_embedding(text):
     return result.embeddings[0].values
 
 def store_chunks(chunks):
-    for i,chunks in enumerate(chunks):
-        embedding=get_embedding(chunks)
+    for i,chunk in enumerate(chunks):
+        embedding=get_embedding(chunk)
         collection.add(
             ids=[str(i)],
-            documents=[chunks],
+            documents=[chunk],
             embeddings=[embedding]
         )
 
@@ -36,6 +36,20 @@ def retrieve_relevant_chunks(question):
     )
     return results['documents'][0][0]
 
+def answer_question(question):
+    relevant_chunk=retrieve_relevant_chunks(question)
+    prompt=f"""
+    Answer the following question using ONLY the context below.
+    If the answer is'nt in the context, say "i dont know based on provided notes"
+    
+    Context:{relevant_chunk}
+    Question:{question}
+    """
+    response = client.models.generate_content(
+    model="gemini-2.5-flash-lite",
+    contents=prompt
+    )
+    return response.text
 
 if __name__=="__main__":
     from pdf_processor import extract_text_from_pdf, chunk_text as chunk_fn
@@ -44,10 +58,11 @@ if __name__=="__main__":
     chunks=chunk_fn(text)
     store_chunks(chunks)
 
-    question="What is balance of trade?"
-    relevant_chunk=retrieve_relevant_chunks(question)
+    answer=answer_question("Meaning of KanikaS")
+    print(answer)
+    # relevant_chunk=retrieve_relevant_chunks(question)
 
-    print("Most relevant chunk found:\n", relevant_chunk)
+    # print("Most relevant chunk found:\n", relevant_chunk)
 
 
 
