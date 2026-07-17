@@ -10,7 +10,7 @@ client=genai.Client(api_key=api_key)
 
 
 chroma_client=chromadb.Client()
-collection=chroma_client.create_collection(name="study_notes")
+collection=chroma_client.get_or_create_collection(name="study_notes")
 
 def get_embedding(text):
     result=client.models.embed_content(
@@ -60,10 +60,7 @@ if __name__=="__main__":
 
     answer=answer_question("Meaning of KanikaS")
     print(answer)
-    # relevant_chunk=retrieve_relevant_chunks(question)
-
-    # print("Most relevant chunk found:\n", relevant_chunk)
-
+    
 
 
 
