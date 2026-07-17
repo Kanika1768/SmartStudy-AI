@@ -1,3 +1,6 @@
 PyPDF2
 streamlit
 python-dotenv
+google-genai
+chromadb
+numpy
