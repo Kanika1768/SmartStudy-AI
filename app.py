@@ -17,9 +17,15 @@ if uploaded_file is not None:
             f.write(uploaded_file.read())
         text = extract_text_from_pdf("temp.pdf")
         st.session_state.chunks = chunk_text(text)
-        store_chunks(st.session_state.chunks)
-        st.success(f"PDF loaded! Found {len(st.session_state.chunks)} sections.")
-
+        
+        with st.spinner("Processing your PDF... this may take a moment for large files."):
+            try:
+                store_chunks(st.session_state.chunks)
+                st.success(f"PDF loaded! Found {len(st.session_state.chunks)} sections.")
+            except Exception as e:
+                st.error("Failed to process PDF. Please try again.")
+                del st.session_state.chunks  
+                
 if "chunks" in st.session_state:
     tab1, tab2, tab3 = st.tabs(["Quiz Me", "Ask a Question", "My Weak Spots"])
 

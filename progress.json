@@ -1,0 +1,20 @@
+[
+  {
+    "chunk_id": "chunk_1",
+    "question": "What is the largest component of Aggregate Demand?",
+    "correct": false,
+    "timestamp": "2026-07-17T12:14:45.405316"
+  },
+  {
+    "chunk_id": "chunk_1",
+    "question": "In which range of the Keynesian AD\u2013AS Model is fiscal stimulus most effective?",
+    "correct": true,
+    "timestamp": "2026-07-17T12:14:55.309410"
+  },
+  {
+    "chunk_id": "chunk_1",
+    "question": "According to the Keynesian approach, what determines output and employment in the short run?",
+    "correct": false,
+    "timestamp": "2026-07-17T12:15:07.158065"
+  }
+]
