@@ -5,12 +5,28 @@ and SmartStudy AI turns it into an active study session.
 
 🔗 **Live app:** https://smartstudy-ai-vly8fyfdxdhuv83znhptbz.streamlit.app
 
+## Why this is different
+
+Most people use ChatGPT to study by pasting their notes and asking questions. 
+That works, but ChatGPT answers from everything it knows,not just your notes. 
+It can confidently give you an answer that has nothing to do with what your 
+professor actually taught.
+
+SmartStudy AI only knows what you upload. Ask it something that isn't in your 
+notes and it tells you "I don't know" instead of making something up. Every 
+quiz question, every answer pulled from your actual material.
+
+It also remembers where you went wrong. After a few quiz sessions, the weak 
+spots tab shows you exactly which sections to revise not a guess, actual 
+data from your own attempts.
+
 
 ## What it does
 
 - **Quiz Me** — generates MCQ + short answer questions from your notes
 - **Ask a Question** — answers from YOUR document only, not general knowledge
 - **Weak Spots** — tracks which sections you keep getting wrong
+
 
 
 ## Tech stack
@@ -40,4 +56,3 @@ streamlit run app.py
 - Typed PDFs only — scanned/handwritten not supported yet
 - Free-tier Gemini quota means large PDFs process slowly
 
-Built by Kanika Gadiya
