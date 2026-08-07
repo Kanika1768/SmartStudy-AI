@@ -27,7 +27,7 @@ def generate_quiz(chunk_text, retries=3, delay=10):
     {chunk_text}
     """
     
-    for attempt in range(3):       
+    for attempt in range(retries):       
         try:
             response = client.models.generate_content(
                 model="gemini-2.5-flash-lite",
@@ -36,7 +36,7 @@ def generate_quiz(chunk_text, retries=3, delay=10):
             return response.text
         except Exception as e:
             print(f"Attempt {attempt + 1} failed: {e}")
-            time.sleep(10) 
+            time.sleep(delay) 
     
     return None  
 if __name__ == "__main__":
