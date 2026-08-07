@@ -19,7 +19,6 @@ uploaded_files = st.file_uploader(
 )
 if uploaded_files:
 
-    # Detect if a different set of PDFs has been uploaded
     current_files = sorted([file.name for file in uploaded_files])
 
     if (st.session_state.get("uploaded_files") != current_files 
@@ -102,6 +101,14 @@ if "chunks" in st.session_state:
                 "Exam Mode"
         ]
         )
+        difficulty = st.selectbox(
+            "Choose Difficulty",
+            [
+                "Easy",
+                "Medium",
+                "Hard"
+            ]
+        )
 
         if quiz_mode == "Entire Document":
             document_chunks = retrieve_chunks_by_document(
@@ -123,7 +130,10 @@ if "chunks" in st.session_state:
                             for chunk in selected_chunks
                         )
 
-                        raw = generate_quiz(document_text)
+                        raw = generate_quiz(
+                            document_text,
+                            difficulty=difficulty
+                        )
                         if raw is None:
                             st.error("Failed after 3 retries. Try again.")
                         else:

@@ -7,23 +7,66 @@ load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 client=genai.Client(api_key=api_key)
 
-def generate_quiz(chunk_text, retries=3, delay=10):
+def generate_quiz(
+    chunk_text,
+    difficulty="Medium",
+    retries=3,
+    delay=10
+):
     prompt = f"""
-    You are a quiz generator for a study app.
-    Based on the following text, create exactly 3 quiz questions.
-    Make 2 of them multiple-choice (with 4 options each) and 1 a short-answer question.
+    You are SmartStudy AI's quiz generator.
 
-    Respond ONLY with valid JSON. Do not include markdown formatting like ```json. 
-    Do not include any explanation outside the JSON.
+    Create a {difficulty} level quiz using ONLY the study material below.
 
-    Use this exact format:
+    Difficulty Guidelines
+
+    Easy
+    - Simple recall questions
+    - Definitions
+    - Basic factual MCQs
+
+    Medium
+    - Conceptual understanding
+    - Compare concepts
+    - Simple reasoning
+
+    Hard
+    - Analytical thinking
+    - Scenario-based questions
+    - Application of concepts
+
+    Requirements
+
+    Generate exactly 3 questions.
+
+    - 2 MCQs (4 options each)
+    - 1 Short Answer
+
+    Return ONLY valid JSON.
+
+    Use this format:
+
     [
-      {{"type": "mcq", "question": "...", "options": ["...", "...", "...", "..."], "answer": "..."}},
-      {{"type": "mcq", "question": "...", "options": ["...", "...", "...", "..."], "answer": "..."}},
-      {{"type": "short_answer", "question": "...", "answer": "..."}}
+    {{
+        "type":"mcq",
+        "question":"...",
+        "options":["...","...","...","..."],
+        "answer":"..."
+        }},
+    {{
+        "type":"mcq",
+        "question":"...",
+        "options":["...","...","...","..."],
+        "answer":"..."
+    }},
+    {{
+        "type":"short_answer",
+        "question":"...",
+        "answer":"..."
+    }}
     ]
 
-    Text:
+    Study Material
     {chunk_text}
     """
     
