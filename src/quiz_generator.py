@@ -10,6 +10,7 @@ client=genai.Client(api_key=api_key)
 def generate_quiz(
     chunk_text,
     difficulty="Medium",
+    num_questions=3,
     retries=3,
     delay=10
 ):
@@ -37,34 +38,33 @@ def generate_quiz(
 
     Requirements
 
-    Generate exactly 3 questions.
+    Generate exactly {num_questions} questions.
 
-    - 2 MCQs (4 options each)
-    - 1 Short Answer
+    Use approximately:
 
+    - 70% MCQs (4 options each)
+    - 30% Short Answer questions
+    
     Return ONLY valid JSON.
 
-    Use this format:
+    The output must be a JSON array containing exactly {num_questions} question objects.
 
-    [
+    Each question must follow one of these formats:
+
+    MCQ:
     {{
         "type":"mcq",
         "question":"...",
         "options":["...","...","...","..."],
         "answer":"..."
-        }},
-    {{
-        "type":"mcq",
-        "question":"...",
-        "options":["...","...","...","..."],
-        "answer":"..."
-    }},
+    }}
+
+    Short Answer:
     {{
         "type":"short_answer",
         "question":"...",
         "answer":"..."
     }}
-    ]
 
     Study Material
     {chunk_text}

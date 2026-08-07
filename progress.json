@@ -19,5 +19,285 @@
     "question": "What is the purpose of 'Errors & Omissions' in the Balance of Payments?",
     "correct": false,
     "timestamp": "2026-08-07T23:09:08.524236"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What does AD stand for in macroeconomics?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.641379"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is the formula for Aggregate Demand (AD)?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.642425"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which component of Aggregate Demand represents spending by businesses on physical capital?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.642704"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which component of Aggregate Demand is the most volatile?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.642920"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What are the three types of Investment mentioned in the study material?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.643270"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What does the (X - M) component of Aggregate Demand represent?",
+    "correct": true,
+    "timestamp": "2026-08-08T00:53:20.643626"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which of the following is a key determinant of Net Exports?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.643958"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "According to the Keynesian approach, what determines output and employment in the short run?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.644245"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Why does the Aggregate Demand curve slope downward?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.644583"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "The Wealth Effect describes how higher prices affect consumer spending by:",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.645063"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "The Interest Rate Effect suggests that higher prices lead to:",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.645425"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is meant by 'Effective Demand' in the Keynesian approach?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.645778"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is a key determinant of Investment (I)?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.646100"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What does Government Spending (G) represent in the Aggregate Demand formula?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.646426"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "According to the study material, why do markets NOT self-correct quickly in a recession, according to Keynes?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.647299"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which factor boosts exports (X) according to the study material?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.647923"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Imports (M) are subtracted from domestic AD. Imports tend to rise with:",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.648906"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is the 'Multiplier Effect' in relation to government spending?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.649396"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is the approximate percentage of GDP that Consumption (C) typically accounts for?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.649783"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which of the following is NOT listed as a key determinant of Investment (I)?",
+    "correct": false,
+    "timestamp": "2026-08-08T00:53:20.650088"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is the formula for Aggregate Demand (AD)?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.567299"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which component of Aggregate Demand represents spending by businesses on physical capital?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.568829"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What does 'C' stand for in the Aggregate Demand formula?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.569675"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "The Wealth Effect explains why the AD curve slopes downward. What happens to consumer spending when prices rise according to the Wealth Effect?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.570776"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What does the term 'G' represent in the Aggregate Demand formula?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.571444"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What are the three types of investment mentioned in the study material?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.571981"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which component of AD links it to the global economy?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.572426"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "According to the Interest Rate Effect, what happens to investment when prices rise?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.572893"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is one of the key determinants of Net Exports (NX)?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.573340"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "According to Keynesian economics, what determines output and employment in the short run?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.573951"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which component of AD is described as the most volatile?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.574392"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What does the term '(X - M)' represent in the Aggregate Demand formula?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.574846"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is the approximate percentage of GDP that Consumption (C) accounts for?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.575393"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "If domestic prices rise, what is the likely effect on exports according to the Exchange Rate Effect?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.575909"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is one of the key determinants of Investment (I)?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.576307"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Keynes argued that in a recession, markets do NOT self-correct quickly. What does he suggest is needed to stimulate AD?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.576774"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is 'Effective Demand' according to the Keynesian approach?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.577193"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What does the term 'sticky wages and prices' mean in the context of recessions?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.577632"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is the relationship between the Multiplier Effect and the Marginal Propensity to Consume (MPC)?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.578131"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "What is the formula for the multiplier effect in relation to government spending (Delta-G) and change in output (Delta-Y)?",
+    "correct": false,
+    "timestamp": "2026-08-08T01:00:33.578544"
   }
 ]

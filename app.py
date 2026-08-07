@@ -165,9 +165,20 @@ if "chunks" in st.session_state:
                 f"Using {len(document_chunks)} random sections from all uploaded PDFs."
          )
 
-        else:
-            st.info("Exam Mode is coming soon!")
+        elif quiz_mode == "Exam Mode":
+            document_chunks = retrieve_chunks_by_document(
+                selected_document
+                )
 
+            quiz_document = selected_document
+            st.success("Exam Mode")
+
+            st.caption(
+                f"Generating a 20-question exam from {selected_document}."
+            )
+
+        else:
+            st.info("Invalid quiz mode.")
             document_chunks = []
             quiz_document = None
 
@@ -181,10 +192,16 @@ if "chunks" in st.session_state:
                     )
                     
 
+                    question_count = 3
+                    if quiz_mode == "Exam Mode":
+                          question_count = 20
+
                     raw = generate_quiz(
                         document_text,
-                        difficulty=difficulty
+                        difficulty=difficulty,
+                        num_questions=question_count
                     )
+                    
 
                     if raw is None:
                         st.error("Failed after 3 retries. Try again.")
@@ -205,6 +222,11 @@ if "chunks" in st.session_state:
                                 "Random Revision quiz generated successfully."
                            )
 
+                        elif quiz_mode == "Exam Mode":
+                            st.success(
+                                "Exam generated successfully."
+                            )
+
                         else:
                             st.success(
                                 f"Quiz generated successfully from {quiz_document}."
@@ -219,58 +241,165 @@ if "chunks" in st.session_state:
 
         if "questions" in st.session_state:
 
-            for index, q in enumerate(st.session_state.questions):
+            # -------------------------------
+            # EXAM MODE
+            # -------------------------------
+            if quiz_mode == "Exam Mode":
 
-                st.write(f"### Question {index + 1}")
-                st.write(q["question"])
+                with st.form("exam_form"):
 
-                with st.form(key=f"quiz_form_{index}"):
+                    user_answers = {}
 
-                    if q["type"] == "mcq":
+                    for index, q in enumerate(st.session_state.questions):
 
-                        user_choice = st.radio(
-                            "Choose your answer:",
-                            options=q["options"],
-                            key=f"radio_{index}"
-                        )
+                        st.write(f"### Question {index + 1}")
+                        st.write(q["question"])
 
-                    else:
+                        if q["type"] == "mcq":
 
-                        user_choice = st.text_input(
-                            "Your answer:",
-                            key=f"text_{index}"
-                        )
+                            user_answers[index] = st.radio(
+                                "Choose your answer:",
+                                options=q["options"],
+                                key=f"exam_radio_{index}"
+                            )
 
-                    submit = st.form_submit_button("Submit Answer")
+                        else:
 
-                    if submit:
+                            user_answers[index] = st.text_input(
+                                "Your answer:",
+                                key=f"exam_text_{index}"
+                            )
+
+                        st.divider()
+
+                    submit_exam = st.form_submit_button("Submit Exam")
+
+                if submit_exam:
+
+                    score = 0
+
+                    for index, q in enumerate(st.session_state.questions):
 
                         is_correct = (
-                            user_choice.strip().lower()
+                            user_answers[index].strip().lower()
                             ==
                             q["answer"].strip().lower()
                         )
 
                         if is_correct:
-
-                            st.success("✅ Correct!")
-
-                        else:
-
-                            st.error(
-                                f"❌ Incorrect!\n\nCorrect answer: {q['answer']}"
-                            )
+                            score += 1
 
                         save_attempt(
                             chunk_id=st.session_state.quiz_document,
                             document=st.session_state.quiz_document,
                             question=q["question"],
                             correct=is_correct
+                        )
+
+                    total = len(st.session_state.questions)
+
+                    st.success("🎉 Exam Completed!")
+
+                    st.metric("Score", f"{score}/{total}")
+
+                    st.metric(
+                        "Percentage",
+                        f"{round(score * 100 / total)}%"
+                    )
+
+                    st.write(f"✅ Correct: {score}")
+                    st.write(f"❌ Wrong: {total - score}")
+                    st.markdown("---")
+                    st.subheader("📝 Review Answers")
+
+                    for index, q in enumerate(st.session_state.questions):
+
+                        user_answer = user_answers[index]
+
+                        correct_answer = q["answer"]
+
+                        if user_answer.strip().lower() == correct_answer.strip().lower():
+
+                            st.success(f"Q{index + 1}: {q['question']}")
+                            st.write(f"Your answer: {user_answer}")
+
+                        else:
+
+                            st.error(f"Q{index + 1}: {q['question']}")
+                            st.write(f"Your answer: {user_answer}")
+                            st.write(f"Correct answer: {correct_answer}")
+
+                        st.divider()
+                   
+
+                    if score >= 18:
+                        st.balloons()
+                        st.success("Excellent performance! 🌟")
+
+                    elif score >= 14:
+                        st.success("Good job! Keep practicing.")
+
+                    elif score >= 10:
+                        st.warning("Decent score. Review weak topics.")
+
+                    else:
+                        st.error("You need more revision. Try Weak Topics mode.")
+
+            # -------------------------------
+            # NORMAL QUIZ
+            # -------------------------------
+            else:
+
+                for index, q in enumerate(st.session_state.questions):
+
+                    st.write(f"### Question {index + 1}")
+                    st.write(q["question"])
+
+                    with st.form(key=f"quiz_form_{index}"):
+
+                        if q["type"] == "mcq":
+
+                            user_choice = st.radio(
+                                "Choose your answer:",
+                                options=q["options"],
+                                key=f"radio_{index}"
                             )
 
-                st.divider()
+                        else:
 
-   
+                            user_choice = st.text_input(
+                                "Your answer:",
+                                key=f"text_{index}"
+                            )
+
+                        submit = st.form_submit_button("Submit Answer")
+
+                        if submit:
+
+                            is_correct = (
+                                user_choice.strip().lower()
+                                ==
+                                q["answer"].strip().lower()
+                            )
+
+                            if is_correct:
+
+                                st.success("✅ Correct!")
+
+                            else:
+
+                                st.error(
+                                    f"❌ Incorrect!\n\nCorrect answer: {q['answer']}"
+                                )
+
+                            save_attempt(
+                                chunk_id=st.session_state.quiz_document,
+                                document=st.session_state.quiz_document,
+                                question=q["question"],
+                                correct=is_correct
+                            )
+
+                    st.divider()   
 
     with tab2:
 
