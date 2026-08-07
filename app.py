@@ -505,9 +505,18 @@ if "chunks" in st.session_state:
                         for chunk in document_chunks
                     )
 
-                    raw = generate_flashcards(
-                        document_text
+                    response = requests.post(
+                        "http://127.0.0.1:8000/flashcards/generate",
+                        json={
+                            "document_text": document_text
+                        }
                     )
+
+                    if response.status_code != 200:
+                        st.error(f"Backend Error: {response.text}")
+                        st.stop()
+
+                    raw = response.json()["flashcards"]
 
                     raw = raw.replace(
                         "```json", ""
