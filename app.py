@@ -9,34 +9,69 @@ from src.qa_engine import answer_question, store_chunks
 from src.tracker import save_attempt, get_weak_chunks
 
 st.title("SmartStudy AI")
-st.write("Upload your notes — AI will quiz you, answer questions, and track your weak spots.")
+st.write("Upload one or more PDFs. SmartStudy AI will answer questions, generate quizzes, and identify weak topics.")
+uploaded_files = st.file_uploader(
+    "Upload one or more PDFs",
+    type="pdf",
+    accept_multiple_files=True
+)
+if uploaded_files:
 
-uploaded_file = st.file_uploader("Upload your PDF", type="pdf")
+    # Detect if a different set of PDFs has been uploaded
+    current_files = sorted([file.name for file in uploaded_files])
 
-if uploaded_file is not None:
+    if (st.session_state.get("uploaded_files") != current_files 
+        or "chunks" not in st.session_state):
 
-    if "chunks" not in st.session_state:
+        st.session_state.uploaded_files = current_files
 
-        with open("temp.pdf", "wb") as f:
-            f.write(uploaded_file.read())
+        all_chunks = []
 
-        pages = load_pdf(
-            "temp.pdf",
-            document_name=uploaded_file.name
-            )
-        st.session_state.chunks = split_documents(pages)
-
-        with st.spinner("Processing your PDF... this may take a moment for large files."):
+        with st.spinner("Processing uploaded PDFs..."):
 
             try:
-                store_chunks(st.session_state.chunks)
-                st.success(f"PDF loaded! Found {len(st.session_state.chunks)} sections.")
+
+                for uploaded_file in uploaded_files:
+
+                    with open("temp.pdf", "wb") as f:
+                        f.write(uploaded_file.read())
+
+                    pages = load_pdf(
+                        "temp.pdf",
+                        document_name=uploaded_file.name
+                    )
+
+                    chunks = split_documents(pages)
+
+                    all_chunks.extend(chunks)
+
+                st.session_state.chunks = all_chunks
+
+            # Clear old quiz whenever new PDFs are uploaded
+                st.session_state.pop("questions", None)
+                st.session_state.pop("quiz_chunk_index", None)
+                store_chunks(all_chunks)
+
+                st.success(
+                f"Successfully indexed {len(uploaded_files)} PDFs "
+                f"({len(all_chunks)} chunks)"
+                )
 
             except Exception as e:
-                st.error(f"Failed to process PDF.\n\n{e}")
-                del st.session_state.chunks
+
+                st.error(str(e))
+
+                if "chunks" in st.session_state:
+                    del st.session_state["chunks"]
+                if "uploaded_files" in st.session_state:
+                    del st.session_state["uploaded_files"]
 
 if "chunks" in st.session_state:
+    st.markdown("### 📚 Uploaded Documents")
+
+    for file_name in st.session_state.get("uploaded_files", []):
+        st.success(file_name)
+    st.divider()
 
     tab1, tab2, tab3 = st.tabs(
         ["Quiz Me", "Ask a Question", "My Weak Spots"]
@@ -53,7 +88,10 @@ if "chunks" in st.session_state:
         chunk_index = st.selectbox(
             "Pick a section:",
             range(len(st.session_state.chunks)),
-            format_func=lambda x: f"Section {x + 1}"
+            format_func=lambda x: (
+                f'{st.session_state.chunks[x]["document"]} '
+                f'(Page {st.session_state.chunks[x]["page"]})'
+            )
         )
 
         if st.button("Generate Quiz"):
@@ -148,7 +186,7 @@ if "chunks" in st.session_state:
 
     with tab2:
 
-        st.subheader("Ask Anything About Your Notes")
+        st.subheader("Ask Anything About Your Study Material")
 
         question = st.text_input("Enter your question")
 
@@ -160,7 +198,7 @@ if "chunks" in st.session_state:
 
             else:
 
-                with st.spinner("Searching notes..."):
+                with st.spinner("Searching study material..."):
 
                     result = answer_question(question)
 
