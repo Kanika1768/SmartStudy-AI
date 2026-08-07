@@ -1,8 +1,8 @@
 import streamlit as st
 import json
+import requests
 from src.ingestion.pdf_loader import load_pdf
 from src.ingestion.text_splitter import split_documents
-from src.quiz_generator import generate_quiz
 from src.flashcard_generator import generate_flashcards
 from src.summary_generator import generate_summary
 from src.qa_engine import (
@@ -203,11 +203,19 @@ if "chunks" in st.session_state:
                     if quiz_mode == "Exam Mode":
                           question_count = 20
 
-                    raw = generate_quiz(
-                        document_text,
-                        difficulty=difficulty,
-                        num_questions=question_count
+                    response = requests.post(
+                         "http://127.0.0.1:8000/quiz/generate",
+                         json={
+                              "document_text": document_text,
+                              "difficulty": difficulty,
+                              "num_questions": question_count
+                            }
                     )
+                    if response.status_code != 200:
+                         st.error(f"Backend Error: {response.text}")
+                         st.stop()
+
+                    raw = response.json()["quiz"]
                     
 
                     if raw is None:

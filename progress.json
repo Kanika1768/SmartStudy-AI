@@ -299,5 +299,12 @@
     "question": "What is the formula for the multiplier effect in relation to government spending (Delta-G) and change in output (Delta-Y)?",
     "correct": false,
     "timestamp": "2026-08-08T01:00:33.578544"
+  },
+  {
+    "chunk_id": "Aggregate_Demand pdf-2.pdf",
+    "document": "Aggregate_Demand pdf-2.pdf",
+    "question": "Which component of Aggregate Demand is described as the most volatile?",
+    "correct": false,
+    "timestamp": "2026-08-08T02:22:38.658220"
   }
 ]
