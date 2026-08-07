@@ -1,5 +1,6 @@
 import streamlit as st
 import json
+import random
 import os
 
 from src.ingestion.pdf_loader import load_pdf
@@ -92,45 +93,69 @@ if "chunks" in st.session_state:
         "Choose Document",
         documents
         )
+        quiz_mode = st.selectbox(
+            "Choose Quiz Mode",
+            [
+                "Entire Document",
+                "Weak Topics",
+                "Random Revision",
+                "Exam Mode"
+        ]
+        )
 
-        if st.button("Generate Quiz"):
+        if quiz_mode == "Entire Document":
+            document_chunks = [
+                chunk
+                for chunk in st.session_state.chunks
+                if chunk["document"] == selected_document
+                ]
 
-            with st.spinner("Generating questions..."):
+            st.caption(
+                f"{len(document_chunks)} sections found in this document."
+                )
 
-                try:
-                    document_chunks = [
-                          chunk["text"]
-                          for chunk in st.session_state.chunks
-                          if chunk["document"] == selected_document
-                          ]
+            if st.button("Generate Quiz"):
+                with st.spinner("Generating questions..."):
+                    try:
+                        MAX_CHUNKS = 6
 
-                    document_text = "\n\n".join(document_chunks)
+                        if len(document_chunks) > MAX_CHUNKS:
+                            selected_chunks = random.sample(
+                                document_chunks,
+                                MAX_CHUNKS
+                            )
+                        else:
+                            selected_chunks = document_chunks
 
-                    raw = generate_quiz(document_text)
+                        document_text = "\n\n".join(
+                            chunk["text"]
+                            for chunk in selected_chunks
+                     )
 
-                    if raw is None:
+                        raw = generate_quiz(document_text)
+                        if raw is None:
+                            st.error("Failed after 3 retries. Try again.")
+                        else:
+                            st.info(
+                                f"Quiz generated using {len(selected_chunks)} sections."
+                                )
+                            raw = raw.replace(
+                                "```json", ""
+                            ).replace(
+                                    "```", ""
+                            ).strip()
 
-                        st.error("Failed after 3 retries. Try again.")
+                            st.session_state.questions = json.loads(raw)
+                            st.session_state.quiz_document = selected_document
+                            
+                    except json.JSONDecodeError:
+                        st.error("Quiz generator returned invalid JSON.")
+                        st.code(raw)
 
-                    else:
-
-                        raw = raw.replace(
-                            "```json", ""
-                        ).replace(
-                            "```", ""
-                        ).strip()
-
-                        st.session_state.questions = json.loads(raw)
-                        st.session_state.quiz_document = selected_document
-
-                except json.JSONDecodeError:
-
-                    st.error("Quiz generator returned invalid JSON.")
-                    st.code(raw)
-
-                except Exception as e:
-
-                    st.error(f"Error: {e}")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+        else:
+            st.info(f"{quiz_mode} mode is coming soon!")
 
         if "questions" in st.session_state:
 
