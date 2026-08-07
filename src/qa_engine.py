@@ -1,6 +1,7 @@
 import os
 import time
 import chromadb
+import random
 from google import genai
 from dotenv import load_dotenv
 
@@ -196,6 +197,36 @@ def retrieve_chunks_by_document(
 
     return selected_chunks
 
+def retrieve_random_chunks(max_chunks=6):
+
+    results = collection.get(
+        include=[
+            "documents",
+            "metadatas"
+        ]
+    )
+
+    documents = results.get("documents", [])
+    metadatas = results.get("metadatas", [])
+
+    all_chunks = []
+
+    for doc, metadata in zip(documents, metadatas):
+
+        all_chunks.append({
+
+            "text": doc,
+
+            "page": metadata["page"],
+
+            "document": metadata["document"]
+
+        })
+
+    if len(all_chunks) <= max_chunks:
+        return all_chunks
+
+    return random.sample(all_chunks, max_chunks)
 # --------------------------------------------------
 # Build Context
 # --------------------------------------------------

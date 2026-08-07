@@ -6,7 +6,8 @@ from src.quiz_generator import generate_quiz
 from src.qa_engine import (
     answer_question,
     store_chunks,
-    retrieve_chunks_by_document
+    retrieve_chunks_by_document,
+    retrieve_random_chunks
 )
 from src.tracker import (
     save_attempt,
@@ -151,18 +152,34 @@ if "chunks" in st.session_state:
                     f"Using {len(document_chunks)} sections from {weakest_document}."
                 )
 
+        elif quiz_mode == "Random Revision":
+            document_chunks = retrieve_random_chunks()
+
+            quiz_document = "Random Revision"
+
+            st.success(
+                "Generating a mixed revision quiz."
+           )
+
+            st.caption(
+                f"Using {len(document_chunks)} random sections from all uploaded PDFs."
+         )
+
         else:
-            st.info(f"{quiz_mode} mode is coming soon!")
+            st.info("Exam Mode is coming soon!")
+
             document_chunks = []
             quiz_document = None
 
         if st.button("Generate Quiz") and document_chunks:
             with st.spinner("Generating questions..."):
                 try:
+                    st.session_state.pop("questions", None)
                     document_text = "\n\n".join(
                         chunk["text"]
                         for chunk in document_chunks
                     )
+                    
 
                     raw = generate_quiz(
                         document_text,
@@ -183,9 +200,15 @@ if "chunks" in st.session_state:
 
                         st.session_state.quiz_document = quiz_document
 
-                        st.success(
-                            f"Quiz generated successfully from {quiz_document}."
-                        )
+                        if quiz_document == "Random Revision":
+                            st.success(
+                                "Random Revision quiz generated successfully."
+                           )
+
+                        else:
+                            st.success(
+                                f"Quiz generated successfully from {quiz_document}."
+                            )
 
                 except json.JSONDecodeError:
                     st.error("Quiz generator returned invalid JSON.")
