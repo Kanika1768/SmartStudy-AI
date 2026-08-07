@@ -4,6 +4,7 @@ from src.ingestion.pdf_loader import load_pdf
 from src.ingestion.text_splitter import split_documents
 from src.quiz_generator import generate_quiz
 from src.flashcard_generator import generate_flashcards
+from src.summary_generator import generate_summary
 from src.qa_engine import (
     answer_question,
     store_chunks,
@@ -78,11 +79,12 @@ if "chunks" in st.session_state:
         st.success(file_name)
     st.divider()
 
-    tab1, tab2, tab3 , tab4 = st.tabs(
+    tab1, tab2, tab3 , tab4 , tab5= st.tabs(
         ["Quiz Me",
         "Ask a Question",
         "My Weak Spots",
-        "Flashcards"
+        "Flashcards",
+        "Study Summary"
         ]
     )
 
@@ -581,3 +583,101 @@ if "chunks" in st.session_state:
                         st.session_state.flash_index += 1
                         st.session_state.show_answer = False
                         st.rerun()
+
+    with tab5:
+
+        st.subheader("📄 AI Study Summary")
+
+        documents = sorted({
+            chunk["document"]
+            for chunk in st.session_state.chunks
+        })
+
+        summary_document = st.selectbox(
+            "Choose Document",
+            documents,
+            key="summary_doc"
+        )
+
+        if st.button("Generate Summary"):
+
+            with st.spinner("Generating study summary..."):
+
+                try:
+
+                    document_chunks = retrieve_chunks_by_document(
+                        summary_document
+                    )
+
+                    document_text = "\n\n".join(
+                        chunk["text"]
+                        for chunk in document_chunks
+                    )
+
+                    raw = generate_summary(
+                        document_text
+                    )
+
+                    raw = raw.replace(
+                        "```json", ""
+                    ).replace(
+                        "```", ""
+                    ).strip()
+
+                    st.session_state.summary = json.loads(
+                        raw
+                    )
+
+                    st.success(
+                        "Study Summary generated successfully!"
+                    )
+
+                except json.JSONDecodeError:
+
+                    st.error(
+                        "Summary generator returned invalid JSON."
+                    )
+
+                except Exception as e:
+
+                    st.error(f"Error: {e}")
+
+        if "summary" in st.session_state:
+
+            summary = st.session_state.summary
+
+            st.markdown("---")
+
+            st.subheader("📚 Summary")
+
+            st.write(summary.get("summary", ""))
+
+            st.markdown("---")
+
+            st.subheader("⭐ Key Concepts")
+
+            for concept in summary.get(
+                "key_concepts", []
+            ):
+
+                st.markdown(f"- {concept}")
+
+            st.markdown("---")
+
+            st.subheader("📖 Important Definitions")
+
+            for definition in summary.get(
+                "definitions", []
+            ):
+
+                st.markdown(f"- {definition}")
+
+            st.markdown("---")
+
+            st.subheader("🎯 Exam Tips")
+
+            for tip in summary.get(
+                "exam_tips", []
+            ):
+
+                st.markdown(f"- {tip}")
