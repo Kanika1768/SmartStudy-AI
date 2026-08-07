@@ -49,7 +49,7 @@ if uploaded_files:
 
             # Clear old quiz whenever new PDFs are uploaded
                 st.session_state.pop("questions", None)
-                st.session_state.pop("quiz_chunk_index", None)
+                st.session_state.pop("quiz_document", None)
                 store_chunks(all_chunks)
 
                 st.success(
@@ -77,21 +77,20 @@ if "chunks" in st.session_state:
         ["Quiz Me", "Ask a Question", "My Weak Spots"]
     )
 
-    # ======================================================
-    # QUIZ TAB
-    # ======================================================
+    
 
     with tab1:
 
         st.subheader("Quiz Generator")
 
-        chunk_index = st.selectbox(
-            "Pick a section:",
-            range(len(st.session_state.chunks)),
-            format_func=lambda x: (
-                f'{st.session_state.chunks[x]["document"]} '
-                f'(Page {st.session_state.chunks[x]["page"]})'
-            )
+        documents = sorted({
+        chunk["document"]
+        for chunk in st.session_state.chunks
+        })
+
+        selected_document = st.selectbox(
+        "Choose Document",
+        documents
         )
 
         if st.button("Generate Quiz"):
@@ -99,10 +98,15 @@ if "chunks" in st.session_state:
             with st.spinner("Generating questions..."):
 
                 try:
+                    document_chunks = [
+                          chunk["text"]
+                          for chunk in st.session_state.chunks
+                          if chunk["document"] == selected_document
+                          ]
 
-                    raw = generate_quiz(
-                        st.session_state.chunks[chunk_index]["text"]
-                    )
+                    document_text = "\n\n".join(document_chunks)
+
+                    raw = generate_quiz(document_text)
 
                     if raw is None:
 
@@ -117,7 +121,7 @@ if "chunks" in st.session_state:
                         ).strip()
 
                         st.session_state.questions = json.loads(raw)
-                        st.session_state.quiz_chunk_index = chunk_index
+                        st.session_state.quiz_document = selected_document
 
                 except json.JSONDecodeError:
 
@@ -173,16 +177,14 @@ if "chunks" in st.session_state:
                             )
 
                         save_attempt(
-                            chunk_id=f"chunk_{st.session_state.quiz_chunk_index}",
+                            chunk_id=st.session_state.quiz_document,
                             question=q["question"],
                             correct=is_correct
-                        )
+                            )
 
                 st.divider()
 
-    # ======================================================
-    # ASK QUESTION TAB
-    # ======================================================
+   
 
     with tab2:
 
@@ -209,9 +211,7 @@ if "chunks" in st.session_state:
                     for source in result["sources"]:
                         st.write(f"📄 {source}")
 
-    # ======================================================
-    # WEAK SPOTS TAB
-    # ======================================================
+   
 
     with tab3:
 
@@ -237,9 +237,7 @@ if "chunks" in st.session_state:
                     (counts["wrong"] / total) * 100
                 )
 
-                chart_data[
-                    f"Section {chunk_id[-1]}"
-                ] = wrong_pct
+                chart_data[chunk_id] = wrong_pct
 
             st.write(
                 "**Percentage of incorrectly answered questions**"
