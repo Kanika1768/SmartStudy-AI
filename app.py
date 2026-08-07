@@ -631,9 +631,18 @@ if "chunks" in st.session_state:
                         for chunk in document_chunks
                     )
 
-                    raw = generate_summary(
-                        document_text
+                    response = requests.post(
+                        "http://127.0.0.1:8000/summary/generate",
+                        json={
+                            "document_text": document_text
+                        }
                     )
+
+                    if response.status_code != 200:
+                        st.error(f"Backend Error: {response.text}")
+                        st.stop()
+
+                    raw = response.json()["summary"]
 
                     raw = raw.replace(
                         "```json", ""
