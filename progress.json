@@ -16,5 +16,23 @@
     "question": "According to the Keynesian approach, what determines output and employment in the short run?",
     "correct": false,
     "timestamp": "2026-07-17T12:15:07.158065"
+  },
+  {
+    "chunk_id": "chunk_0",
+    "question": "What does BOP stand for in the context of international finance?",
+    "correct": false,
+    "timestamp": "2026-08-07T12:59:52.105394"
+  },
+  {
+    "chunk_id": "chunk_0",
+    "question": "The Balance of Payments (BOP) is a statement that summarizes the financial transactions between which entities?",
+    "correct": false,
+    "timestamp": "2026-08-07T12:59:55.747006"
+  },
+  {
+    "chunk_id": "chunk_0",
+    "question": "What fundamental concept does the Balance of Payments (BOP) statement track?",
+    "correct": false,
+    "timestamp": "2026-08-07T13:00:03.096659"
   }
 ]

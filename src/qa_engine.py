@@ -4,33 +4,32 @@ import chromadb
 from google import genai
 from dotenv import load_dotenv
 
-# -------------------------
+# --------------------------------------------------
 # Configuration
-# -------------------------
+# --------------------------------------------------
 
 load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key)
 
-# -------------------------
+# --------------------------------------------------
 # ChromaDB Setup
-# -------------------------
+# --------------------------------------------------
+
+COLLECTION_NAME = "study_notes"
 
 chroma_client = chromadb.Client()
 
 collection = chroma_client.get_or_create_collection(
-    name="study_notes"
+    name=COLLECTION_NAME
 )
 
-# -------------------------
+# --------------------------------------------------
 # Embedding Model
-# -------------------------
+# --------------------------------------------------
 
 def get_embedding(text):
-    """
-    Generate embedding using Gemini Embedding Model.
-    """
 
     result = client.models.embed_content(
         model="gemini-embedding-001",
@@ -40,18 +39,25 @@ def get_embedding(text):
     return result.embeddings[0].values
 
 
-# -------------------------
+# --------------------------------------------------
 # Store Chunks
-# -------------------------
+# --------------------------------------------------
 
 def store_chunks(chunks):
-    """
-    Store document chunks along with metadata.
 
-    Metadata:
-    - document name
-    - page number
-    """
+    global collection
+
+    # Remove previous vectors so only the current PDF exists.
+    # (We'll remove this when we implement multi-document support.)
+
+    try:
+        chroma_client.delete_collection(COLLECTION_NAME)
+    except Exception:
+        pass
+
+    collection = chroma_client.get_or_create_collection(
+        name=COLLECTION_NAME
+    )
 
     for i, chunk in enumerate(chunks):
 
@@ -60,6 +66,7 @@ def store_chunks(chunks):
             embedding = get_embedding(chunk["text"])
 
             collection.add(
+
                 ids=[
                     f'{chunk["document"]}_{chunk["page"]}_{i}'
                 ],
@@ -78,9 +85,9 @@ def store_chunks(chunks):
                         "document": chunk["document"]
                     }
                 ]
+
             )
 
-            # Prevent API rate limits
             time.sleep(1)
 
         except Exception as e:
@@ -90,14 +97,11 @@ def store_chunks(chunks):
             time.sleep(5)
 
 
-# -------------------------
-# Retrieve Relevant Chunks
-# -------------------------
+# --------------------------------------------------
+# Retrieve Chunks
+# --------------------------------------------------
 
 def retrieve_relevant_chunks(question, top_k=5):
-    """
-    Retrieve Top-K most relevant chunks.
-    """
 
     question_embedding = get_embedding(question)
 
@@ -112,6 +116,7 @@ def retrieve_relevant_chunks(question, top_k=5):
             "metadatas",
             "distances"
         ]
+
     )
 
     retrieved_chunks = []
@@ -141,27 +146,34 @@ def retrieve_relevant_chunks(question, top_k=5):
     return retrieved_chunks
 
 
-# -------------------------
+# --------------------------------------------------
 # Build Context
-# -------------------------
+# --------------------------------------------------
 
-def build_context(retrieved_chunks):
-    """
-    Merge retrieved chunks into a single context.
-    """
+def build_context(chunks):
 
     return "\n\n".join(
-        chunk["text"] for chunk in retrieved_chunks
+        chunk["text"] for chunk in chunks
     )
 
 
-# -------------------------
+# --------------------------------------------------
 # Answer Question
-# -------------------------
+# --------------------------------------------------
 
 def answer_question(question):
 
     retrieved_chunks = retrieve_relevant_chunks(question)
+
+    if len(retrieved_chunks) == 0:
+
+        return {
+
+            "answer": "No study material has been indexed yet.",
+
+            "sources": []
+
+        }
 
     context = build_context(retrieved_chunks)
 
@@ -176,7 +188,7 @@ Rules:
 
 2. Never hallucinate.
 
-3. If the answer cannot be found in the context, reply:
+3. If the answer cannot be found in the context, reply exactly:
 
 "I couldn't find this in the uploaded study material."
 
@@ -184,7 +196,7 @@ Rules:
 
 5. Give examples whenever appropriate.
 
-6. Structure long answers using bullet points.
+6. Use bullet points whenever useful.
 
 Context:
 
@@ -200,27 +212,29 @@ Question:
         model="gemini-2.5-flash-lite",
 
         contents=prompt
+
     )
 
-    sources = []
+    sources = sorted({
 
-    for chunk in retrieved_chunks:
+        f'{chunk["document"]} (Page {chunk["page"]})'
 
-        sources.append(
-            f'{chunk["document"]} (Page {chunk["page"]})'
-        )
+        for chunk in retrieved_chunks
+
+    })
 
     return {
 
         "answer": response.text,
 
-        "sources": sorted(list(set(sources)))
+        "sources": sources
+
     }
 
 
-# -------------------------
-# Testing
-# -------------------------
+# --------------------------------------------------
+# Test
+# --------------------------------------------------
 
 if __name__ == "__main__":
 
@@ -238,9 +252,11 @@ if __name__ == "__main__":
     )
 
     print("\nAnswer\n")
+
     print(result["answer"])
 
     print("\nSources\n")
 
     for source in result["sources"]:
+
         print(source)

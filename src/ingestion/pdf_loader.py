@@ -1,40 +1,58 @@
-import pymupdf
 import os
+import pymupdf
 
-def load_pdf(pdf_path):
+
+def load_pdf(pdf_path, document_name=None):
     """
-    Reads a PDF page by page.
+    Load a PDF page by page.
+
+    Args:
+        pdf_path (str):
+            Path to the PDF file.
+
+        document_name (str, optional):
+            Original uploaded filename.
+            If not provided, the filename is extracted from pdf_path.
 
     Returns:
-    [
-        {
-            "text": "...",
-            "page": 1,
-            "document": "OS.pdf"
-        }
-    ]
+        list[dict]
+
+        Example:
+        [
+            {
+                "text": "...",
+                "page": 1,
+                "document": "Operating Systems.pdf"
+            }
+        ]
     """
 
     document = pymupdf.open(pdf_path)
 
+    # Preserve original uploaded filename if available
+    if document_name:
+        filename = document_name
+    else:
+        filename = os.path.basename(pdf_path)
+
     pages = []
 
-    filename = os.path.basename(pdf_path)
-
-    for page_num, page in enumerate(document, start=1):
+    for page_number, page in enumerate(document, start=1):
 
         text = page.get_text("text").strip()
 
-        if text:
+        # Skip empty pages
+        if not text:
+            continue
 
-            pages.append({
-
+        pages.append(
+            {
                 "text": text,
-
-                "page": page_num,
-
+                "page": page_number,
                 "document": filename
+            }
+        )
 
-            })
+    document.close()
 
     return pages
