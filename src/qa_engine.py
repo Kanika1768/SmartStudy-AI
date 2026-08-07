@@ -145,6 +145,56 @@ def retrieve_relevant_chunks(question, top_k=5):
 
     return retrieved_chunks
 
+def retrieve_chunks_by_document(
+    document_name,
+    max_chunks=6
+):
+
+    results = collection.get(
+        where={
+            "document": document_name
+        },
+        include=[
+            "documents",
+            "metadatas"
+        ]
+    )
+
+    documents = results.get("documents", [])
+    metadatas = results.get("metadatas", [])
+
+    retrieved_chunks = []
+
+    for doc, metadata in zip(documents, metadatas):
+
+        retrieved_chunks.append({
+
+            "text": doc,
+
+            "page": metadata["page"],
+
+            "document": metadata["document"]
+
+        })
+
+    total = len(retrieved_chunks)
+
+    if total <= max_chunks:
+        return retrieved_chunks
+
+    step = total / max_chunks
+
+    selected_chunks = []
+
+    for i in range(max_chunks):
+
+        index = int(i * step)
+
+        selected_chunks.append(
+            retrieved_chunks[index]
+        )
+
+    return selected_chunks
 
 # --------------------------------------------------
 # Build Context
