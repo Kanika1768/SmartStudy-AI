@@ -3,10 +3,7 @@ import json
 import requests
 from src.ingestion.pdf_loader import load_pdf
 from src.ingestion.text_splitter import split_documents
-from src.flashcard_generator import generate_flashcards
-from src.summary_generator import generate_summary
 from src.qa_engine import (
-    answer_question,
     store_chunks,
     retrieve_chunks_by_document,
     retrieve_random_chunks
@@ -432,7 +429,18 @@ if "chunks" in st.session_state:
 
                 with st.spinner("Searching study material..."):
 
-                    result = answer_question(question)
+                    response = requests.post(
+                        "http://127.0.0.1:8000/qa/ask",
+                        json={
+                            "question": question
+                        }
+                    )
+
+                    if response.status_code != 200:
+                        st.error(f"Backend Error: {response.text}")
+                        st.stop()
+
+                    result = response.json()
 
                     st.success(result["answer"])
 
@@ -680,7 +688,7 @@ if "chunks" in st.session_state:
 
             st.markdown("---")
 
-            st.subheader("⭐ Key Concepts")
+            st.subheader("Key Concepts")
 
             for concept in summary.get(
                 "key_concepts", []
@@ -700,7 +708,7 @@ if "chunks" in st.session_state:
 
             st.markdown("---")
 
-            st.subheader("🎯 Exam Tips")
+            st.subheader("Exam Tips")
 
             for tip in summary.get(
                 "exam_tips", []

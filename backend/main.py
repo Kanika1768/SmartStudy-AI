@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from backend.routers import quiz
 from backend.routers import flashcards
 from backend.routers import summary
+from backend.routers import qa
 
 app = FastAPI(
     title="SmartStudy AI API",
@@ -24,6 +25,12 @@ app.include_router(
     summary.router,
     prefix="/summary",
     tags=["Summary"]
+)
+
+app.include_router(
+    qa.router,
+    prefix="/qa",
+    tags=["Question Answering"]
 )
 
 @app.get("/")
