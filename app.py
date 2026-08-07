@@ -3,6 +3,7 @@ import json
 from src.ingestion.pdf_loader import load_pdf
 from src.ingestion.text_splitter import split_documents
 from src.quiz_generator import generate_quiz
+from src.flashcard_generator import generate_flashcards
 from src.qa_engine import (
     answer_question,
     store_chunks,
@@ -77,8 +78,12 @@ if "chunks" in st.session_state:
         st.success(file_name)
     st.divider()
 
-    tab1, tab2, tab3 = st.tabs(
-        ["Quiz Me", "Ask a Question", "My Weak Spots"]
+    tab1, tab2, tab3 , tab4 = st.tabs(
+        ["Quiz Me",
+        "Ask a Question",
+        "My Weak Spots",
+        "Flashcards"
+        ]
     )
 
     
@@ -459,3 +464,120 @@ if "chunks" in st.session_state:
             )
 
             st.bar_chart(chart_data)
+
+    with tab4:
+
+        st.subheader("📖 AI Flashcards")
+
+        documents = sorted({
+            chunk["document"]
+            for chunk in st.session_state.chunks
+        })
+
+        flash_document = st.selectbox(
+            "Choose Document",
+            documents,
+            key="flash_doc"
+        )
+
+        if st.button("Generate Flashcards"):
+
+            with st.spinner("Creating flashcards..."):
+
+                try:
+
+                    document_chunks = retrieve_chunks_by_document(
+                        flash_document
+                    )
+
+                    document_text = "\n\n".join(
+                        chunk["text"]
+                        for chunk in document_chunks
+                    )
+
+                    raw = generate_flashcards(
+                        document_text
+                    )
+
+                    raw = raw.replace(
+                        "```json", ""
+                    ).replace(
+                        "```", ""
+                    ).strip()
+
+                    st.session_state.flashcards = json.loads(raw)
+
+                    st.session_state.flash_index = 0
+                    st.session_state.show_answer = False
+
+                    st.success(
+                        "Flashcards generated successfully!"
+                    )
+
+                except json.JSONDecodeError:
+
+                    st.error(
+                        "Flashcards returned invalid JSON."
+                    )
+
+                except Exception as e:
+
+                    st.error(f"Error: {e}")
+
+        if "flashcards" in st.session_state:
+
+            if "flash_index" not in st.session_state:
+                st.session_state.flash_index = 0
+
+            if "show_answer" not in st.session_state:
+                st.session_state.show_answer = False
+
+            card = st.session_state.flashcards[
+                st.session_state.flash_index
+            ]
+
+            st.markdown("---")
+
+            st.write(
+                f"### Card {st.session_state.flash_index + 1} of {len(st.session_state.flashcards)}"
+            )
+
+            st.info(card["front"])
+
+            if st.session_state.show_answer:
+                st.success(card["back"])
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+
+                if st.button("⬅ Previous"):
+
+                    if st.session_state.flash_index > 0:
+
+                        st.session_state.flash_index -= 1
+                        st.session_state.show_answer = False
+                        st.rerun()
+
+            with col2:
+
+                if st.button("🔄 Flip Card"):
+
+                    st.session_state.show_answer = (
+                        not st.session_state.show_answer
+                    )
+
+                    st.rerun()
+
+            with col3:
+
+                if st.button("Next ➡"):
+
+                    if (
+                        st.session_state.flash_index
+                        < len(st.session_state.flashcards) - 1
+                    ):
+
+                        st.session_state.flash_index += 1
+                        st.session_state.show_answer = False
+                        st.rerun()
