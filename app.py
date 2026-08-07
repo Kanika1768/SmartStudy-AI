@@ -8,8 +8,11 @@ from src.qa_engine import (
     store_chunks,
     retrieve_chunks_by_document
 )
-from src.tracker import save_attempt, get_weak_chunks
-
+from src.tracker import (
+    save_attempt,
+    get_weak_chunks,
+    get_weakest_document
+)
 st.title("SmartStudy AI")
 st.write("Upload one or more PDFs. SmartStudy AI will answer questions, generate quizzes, and identify weak topics.")
 uploaded_files = st.file_uploader(
@@ -115,48 +118,81 @@ if "chunks" in st.session_state:
                 selected_document
             )
 
+            quiz_document = selected_document
             st.caption(
-                f"Using up to {len(document_chunks)} representative sections for quiz generation."
+                f"Using {len(document_chunks)} sections from {selected_document}."
+            )
 
+        elif quiz_mode == "Weak Topics":
+
+            weakest_document = get_weakest_document()
+
+            if weakest_document is None:
+
+                st.warning(
+                    "Answer some quiz questions first."
                 )
 
-            if st.button("Generate Quiz"):
-                with st.spinner("Generating questions..."):
-                    try:
-                        selected_chunks = document_chunks
+                document_chunks = []
+                quiz_document = None
 
-                        document_text = "\n\n".join(
-                            chunk["text"]
-                            for chunk in selected_chunks
-                        )
+            else:
+                st.success(
+                    f"Weakest document: {weakest_document}"
+                )
 
-                        raw = generate_quiz(
-                            document_text,
-                            difficulty=difficulty
-                        )
-                        if raw is None:
-                            st.error("Failed after 3 retries. Try again.")
-                        else:
-                            st.success(
-                                f"Quiz generated successfully using {len(selected_chunks)} representative sections."
-                            )
-                            raw = raw.replace(
-                                "```json", ""
-                            ).replace(
-                                    "```", ""
-                            ).strip()
+                document_chunks = retrieve_chunks_by_document(
+                    weakest_document
+                )
 
-                            st.session_state.questions = json.loads(raw)
-                            st.session_state.quiz_document = selected_document
+                quiz_document = weakest_document
 
-                    except json.JSONDecodeError:
-                        st.error("Quiz generator returned invalid JSON.")
-                        st.code(raw)
+                st.caption(
+                    f"Using {len(document_chunks)} sections from {weakest_document}."
+                )
 
-                    except Exception as e:
-                        st.error(f"Error: {e}")
         else:
             st.info(f"{quiz_mode} mode is coming soon!")
+            document_chunks = []
+            quiz_document = None
+
+        if st.button("Generate Quiz") and document_chunks:
+            with st.spinner("Generating questions..."):
+                try:
+                    document_text = "\n\n".join(
+                        chunk["text"]
+                        for chunk in document_chunks
+                    )
+
+                    raw = generate_quiz(
+                        document_text,
+                        difficulty=difficulty
+                    )
+
+                    if raw is None:
+                        st.error("Failed after 3 retries. Try again.")
+
+                    else:
+                        raw = raw.replace(
+                            "```json", ""
+                        ).replace(
+                            "```", ""
+                        ).strip()
+
+                        st.session_state.questions = json.loads(raw)
+
+                        st.session_state.quiz_document = quiz_document
+
+                        st.success(
+                            f"Quiz generated successfully from {quiz_document}."
+                        )
+
+                except json.JSONDecodeError:
+                    st.error("Quiz generator returned invalid JSON.")
+                    st.code(raw)
+
+                except Exception as e:
+                    st.error(f"Error: {e}")
 
         if "questions" in st.session_state:
 
@@ -204,6 +240,7 @@ if "chunks" in st.session_state:
 
                         save_attempt(
                             chunk_id=st.session_state.quiz_document,
+                            document=st.session_state.quiz_document,
                             question=q["question"],
                             correct=is_correct
                             )
