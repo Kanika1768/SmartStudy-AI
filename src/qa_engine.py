@@ -4,20 +4,14 @@ import chromadb
 import random
 from google import genai
 from dotenv import load_dotenv
-from chromadb.config import Settings
 
-# --------------------------------------------------
-# Configuration
-# --------------------------------------------------
 
 load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key)
 
-# --------------------------------------------------
-# ChromaDB Setup
-# --------------------------------------------------
+
 
 COLLECTION_NAME = "study_notes"
 

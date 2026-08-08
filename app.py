@@ -1,10 +1,7 @@
 import streamlit as st
 import json
 import requests
-# from src.ingestion.pdf_loader import load_pdf
-# from src.ingestion.text_splitter import split_documents
 from src.qa_engine import (
-    # store_chunks,
     retrieve_chunks_by_document,
     retrieve_random_chunks
 )
@@ -239,7 +236,7 @@ if "chunks" in st.session_state:
                         ).replace(
                             "```", ""
                         ).strip()
-                        
+
                         st.session_state.questions = json.loads(raw)
 
                         st.session_state.quiz_document = quiz_document
@@ -264,7 +261,7 @@ if "chunks" in st.session_state:
                     st.code(raw)
 
                 except Exception as e:
-                    st.error(f"Error: {e}")
+                    st.error(f"Unexpected Error: {e}")
 
         if "questions" in st.session_state:
 
