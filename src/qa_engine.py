@@ -4,6 +4,7 @@ import chromadb
 import random
 from google import genai
 from dotenv import load_dotenv
+from chromadb.config import Settings
 
 # --------------------------------------------------
 # Configuration
@@ -20,8 +21,10 @@ client = genai.Client(api_key=api_key)
 
 COLLECTION_NAME = "study_notes"
 
-chroma_client = chromadb.Client()
 
+chroma_client = chromadb.PersistentClient(
+    path="./chroma_db"
+)
 collection = chroma_client.get_or_create_collection(
     name=COLLECTION_NAME
 )
@@ -48,17 +51,11 @@ def store_chunks(chunks):
 
     global collection
 
-    # Remove previous vectors so only the current PDF exists.
-    # (We'll remove this when we implement multi-document support.)
+    # Remove all existing vectors
+    existing = collection.get()
 
-    try:
-        chroma_client.delete_collection(COLLECTION_NAME)
-    except Exception:
-        pass
-
-    collection = chroma_client.get_or_create_collection(
-        name=COLLECTION_NAME
-    )
+    if existing["ids"]:
+        collection.delete(ids=existing["ids"])
 
     for i, chunk in enumerate(chunks):
 
@@ -67,38 +64,27 @@ def store_chunks(chunks):
             embedding = get_embedding(chunk["text"])
 
             collection.add(
-
                 ids=[
                     f'{chunk["document"]}_{chunk["page"]}_{i}'
                 ],
-
                 documents=[
                     chunk["text"]
                 ],
-
                 embeddings=[
                     embedding
                 ],
-
                 metadatas=[
                     {
                         "page": chunk["page"],
                         "document": chunk["document"]
                     }
                 ]
-
             )
 
             time.sleep(1)
 
         except Exception as e:
-
             print(f"Error storing chunk {i}: {e}")
-
-            time.sleep(5)
-
-
-# --------------------------------------------------
 # Retrieve Chunks
 # --------------------------------------------------
 
@@ -151,6 +137,12 @@ def retrieve_chunks_by_document(
     max_chunks=6
 ):
 
+    global collection
+
+    collection = chroma_client.get_or_create_collection(
+        name=COLLECTION_NAME
+    )
+
     results = collection.get(
         where={
             "document": document_name
@@ -169,13 +161,9 @@ def retrieve_chunks_by_document(
     for doc, metadata in zip(documents, metadatas):
 
         retrieved_chunks.append({
-
             "text": doc,
-
             "page": metadata["page"],
-
             "document": metadata["document"]
-
         })
 
     total = len(retrieved_chunks)
@@ -198,7 +186,10 @@ def retrieve_chunks_by_document(
     return selected_chunks
 
 def retrieve_random_chunks(max_chunks=6):
-
+    global collection
+    collection = chroma_client.get_or_create_collection(
+    name=COLLECTION_NAME
+    )
     results = collection.get(
         include=[
             "documents",

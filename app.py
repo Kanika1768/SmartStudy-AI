@@ -1,10 +1,10 @@
 import streamlit as st
 import json
 import requests
-from src.ingestion.pdf_loader import load_pdf
-from src.ingestion.text_splitter import split_documents
+# from src.ingestion.pdf_loader import load_pdf
+# from src.ingestion.text_splitter import split_documents
 from src.qa_engine import (
-    store_chunks,
+    # store_chunks,
     retrieve_chunks_by_document,
     retrieve_random_chunks
 )
@@ -29,7 +29,6 @@ if uploaded_files:
 
         st.session_state.uploaded_files = current_files
 
-        all_chunks = []
 
         with st.spinner("Processing uploaded PDFs..."):
 
@@ -37,28 +36,39 @@ if uploaded_files:
 
                 for uploaded_file in uploaded_files:
 
-                    with open("temp.pdf", "wb") as f:
-                        f.write(uploaded_file.read())
-
-                    pages = load_pdf(
-                        "temp.pdf",
-                        document_name=uploaded_file.name
+                    response = requests.post(
+                        "http://127.0.0.1:8000/documents/upload",
+                        files={
+                            "file": (
+                                uploaded_file.name,
+                                uploaded_file,
+                                "application/pdf"
+                            )
+                        }
                     )
 
-                    chunks = split_documents(pages)
+                    if response.status_code != 200:
 
-                    all_chunks.extend(chunks)
+                        st.error(f"Backend Error: {response.text}")
 
-                st.session_state.chunks = all_chunks
+                        st.stop()
+
+                    result = response.json()
+
+                    st.success(
+                        f"{result['filename']} indexed "
+                        f"({result['chunks']} chunks)"
+                    )
+
+                st.session_state.chunks = [
+                    {
+                        "document": file.name
+                    }
+                    for file in uploaded_files
+                ]
 
                 st.session_state.pop("questions", None)
                 st.session_state.pop("quiz_document", None)
-                store_chunks(all_chunks)
-
-                st.success(
-                f"Successfully indexed {len(uploaded_files)} PDFs "
-                f"({len(all_chunks)} chunks)"
-                )
 
             except Exception as e:
 
@@ -66,6 +76,7 @@ if uploaded_files:
 
                 if "chunks" in st.session_state:
                     del st.session_state["chunks"]
+
                 if "uploaded_files" in st.session_state:
                     del st.session_state["uploaded_files"]
 
@@ -190,10 +201,7 @@ if "chunks" in st.session_state:
             with st.spinner("Generating questions..."):
                 try:
                     st.session_state.pop("questions", None)
-                    document_text = "\n\n".join(
-                        chunk["text"]
-                        for chunk in document_chunks
-                    )
+                    
                     
 
                     question_count = 3
@@ -203,7 +211,7 @@ if "chunks" in st.session_state:
                     response = requests.post(
                          "http://127.0.0.1:8000/quiz/generate",
                          json={
-                              "document_text": document_text,
+                              "document_name": quiz_document,
                               "difficulty": difficulty,
                               "num_questions": question_count
                             }
@@ -213,18 +221,25 @@ if "chunks" in st.session_state:
                          st.stop()
 
                     raw = response.json()["quiz"]
-                    
 
                     if raw is None:
+
                         st.error("Failed after 3 retries. Try again.")
+                        st.stop()
+
+                    elif raw.startswith("ERROR:"):
+
+                        st.error(raw)
+                        st.stop()
 
                     else:
+
                         raw = raw.replace(
                             "```json", ""
                         ).replace(
                             "```", ""
                         ).strip()
-
+                        
                         st.session_state.questions = json.loads(raw)
 
                         st.session_state.quiz_document = quiz_document
